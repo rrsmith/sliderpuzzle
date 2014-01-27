@@ -1,5 +1,5 @@
 #
-# Solving the slider puzzles using search
+# Sliding block puzzles
 #
 
 

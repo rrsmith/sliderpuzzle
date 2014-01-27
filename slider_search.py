@@ -4,6 +4,7 @@
 
 import math
 from slider_puzzle import SliderPuzzle
+from collections import deque
 
 
 class SliderSearch(object):
@@ -14,7 +15,7 @@ class SliderSearch(object):
         self.square_size = square_size
         self.goal_block_location = self.in_order_goal_block_location
         self.goal_state = self.in_order_goal_state
-        self.frontier = []
+        self.heuristic = self.heuristic_manhatten_distance
 
         self.puzzle = SliderPuzzle(self.square_size, puzzle)
 
@@ -56,3 +57,48 @@ class SliderSearch(object):
                             - self.goal_block_location(x)[1]))
                         for x in self.puzzle.puzzle]
         return sum(m_distances)
+
+    def search_a_star(self):
+        """
+        Find best path solution using A*
+        Returns the list of states from initial to goal
+        or None if no solution possible
+        """
+        frontier = deque([Node(self.puzzle.puzzle, None, 0)])
+        explored = set()
+        goal = self.goal_state()
+
+        while 1:
+            if not frontier:
+                return None
+            else:
+                # choose node
+                costs = [self.heuristic(x.state) + x.path_cost for x in frontier]
+                selected_index = costs.index(min(costs))
+                selected = frontier[selected_index]
+                if (selected.state == goal):
+                    path = []
+                    while selected.parent is not None:
+                        path.append(selected.state)
+                        selected = selected.parent
+                    path.append(selected.state)
+                    path = path[::-1]
+                    return path
+                else:
+                    # Expand the node
+                    self.puzzle.puzzle = selected.state
+                    ps = self.puzzle.possible_moves()
+                    for x in ps:
+                        if str(x) not in explored:
+                            frontier.append(Node(x, selected, selected.path_cost+1))
+                    # Move checked into explored
+                    ss = str(selected.state)
+                    explored.add(ss)
+                    frontier.remove(selected)
+
+
+class Node(object):
+    def __init__(self, state, parent, path_cost):
+        self.state = state
+        self.parent = parent
+        self.path_cost = path_cost
