@@ -2,7 +2,7 @@
 # Search slider puzzles for best path
 #
 
-import math
+import heapq
 from slider_puzzle import SliderPuzzle
 from collections import deque
 
@@ -52,10 +52,10 @@ class SliderSearch(object):
         using manhatten distance
         """
         m_distances = [abs((self.puzzle.current_block_location(x, state)[0]
-                            - self.goal_block_location(x)[0])
-                        + (self.puzzle.current_block_location(x, state)[1]
+                            - self.goal_block_location(x)[0]))
+                        + abs((self.puzzle.current_block_location(x, state)[1]
                             - self.goal_block_location(x)[1]))
-                        for x in self.puzzle.puzzle]
+                        for x in state]
         return sum(m_distances)
 
     def search_a_star(self):
@@ -64,18 +64,26 @@ class SliderSearch(object):
         Returns the list of states from initial to goal
         or None if no solution possible
         """
-        frontier = deque([Node(self.puzzle.puzzle, None, 0)])
+        frontier = []
         explored = set()
+        frontier_seen = set()
         goal = self.goal_state()
+
+        initial = (self.heuristic(self.puzzle.puzzle),
+                    0,
+                    Node(self.puzzle.puzzle, None, 0))
+
+        frontier_seen.add(initial)
+        heapq.heappush(frontier, initial)
+        
 
         while 1:
             if not frontier:
                 return None
             else:
                 # choose node
-                costs = [self.heuristic(x.state) + x.path_cost for x in frontier]
-                selected_index = costs.index(min(costs))
-                selected = frontier[selected_index]
+                sel_node = heapq.heappop(frontier)
+                selected = sel_node[2] 
                 if (selected.state == goal):
                     path = []
                     while selected.parent is not None:
@@ -89,12 +97,17 @@ class SliderSearch(object):
                     self.puzzle.puzzle = selected.state
                     ps = self.puzzle.possible_moves()
                     for x in ps:
-                        if str(x) not in explored:
-                            frontier.append(Node(x, selected, selected.path_cost+1))
+                        vx = (self.heuristic(x) + selected.path_cost+1,
+                                    selected.path_cost+1,
+                                    Node(x, selected, selected.path_cost+1))
+                        if vx not in explored and vx not in frontier_seen:
+                            heapq.heappush(frontier, vx)
+                            frontier_seen.add(vx)
                     # Move checked into explored
-                    ss = str(selected.state)
-                    explored.add(ss)
-                    frontier.remove(selected)
+                    explored.add(sel_node)
+                    frontier_seen.remove(sel_node)
+                    if len(frontier) < 5:
+                        print frontier
 
 
 class Node(object):
@@ -102,3 +115,6 @@ class Node(object):
         self.state = state
         self.parent = parent
         self.path_cost = path_cost
+
+    def __repr__(self):
+        return "%s" % self.state

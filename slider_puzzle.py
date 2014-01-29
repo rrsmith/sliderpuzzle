@@ -26,7 +26,9 @@ class SliderPuzzle(object):
             state = self.puzzle
 
         block_index = state.index(block_number)
-        return (block_index // self.square_size, block_index % self.square_size)
+        
+        block_loc = (block_index // self.square_size, block_index % self.square_size)
+        return block_loc
 
     def generate_random_puzzle(self, square_size=3):
         """

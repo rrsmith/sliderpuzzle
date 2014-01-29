@@ -66,7 +66,10 @@ class TestSliderSearch:
         ss = SliderSearch(3, [8, 1, 2, 3, 4, 5, 6, 7, 0])
         assert ss.heuristic_misplaced(ss.puzzle.puzzle) == 2
         assert ss.heuristic_manhatten_distance(ss.puzzle.puzzle) == 8
-        
+       
+        ss = SliderSearch(3, [4, 8, 5, 7, 6, 1, 0, 2, 3])
+        assert ss.heuristic_misplaced(ss.puzzle.puzzle) == 9
+        assert ss.heuristic_manhatten_distance(ss.puzzle.puzzle) == 20
 
     def test_a_star_search(self):
         ss = SliderSearch(3)
