@@ -41,6 +41,126 @@ class TestSliderPuzzle:
         pm = sp.possible_moves()
         assert len(pm) == 4
 
+        sp.puzzle = [4, 1, 2, 3, 0, 5, 6, 7, 8]
+        exp_states = [
+                        [4, 1, 2, 0, 3, 5, 6, 7, 8],
+                        [4, 1, 2, 3, 5, 0, 6, 7, 8],
+                        [4, 0, 2, 3, 1, 5, 6, 7, 8],
+                        [4, 1, 2, 3, 7, 5, 6, 0, 8]
+                        ]
+
+        pm = sp.possible_moves()
+        assert len(pm) == len(exp_states)
+        for state in pm:
+            assert state in exp_states
+
+    def test_tour(self):
+        sp = SliderPuzzle(3)
+        assert sp.puzzle == [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 0, 2, 3, 4, 5, 6, 7, 8],
+                [3, 1, 2, 0, 4, 5, 6, 7, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 1)
+        assert sp.puzzle == [1, 0, 2, 3, 4, 5, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                [1, 2, 0, 3, 4, 5, 6, 7, 8],
+                [1, 4, 2, 3, 0, 5, 6, 7, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 2)
+        assert sp.puzzle == [1, 2, 0, 3, 4, 5, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 0, 2, 3, 4, 5, 6, 7, 8],
+                [1, 2, 5, 3, 4, 0, 6, 7, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 5)
+        assert sp.puzzle == [1, 2, 5, 3, 4, 0, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 2, 0, 3, 4, 5, 6, 7, 8],
+                [1, 2, 5, 3, 0, 4, 6, 7, 8],
+                [1, 2, 5, 3, 4, 8, 6, 7, 0]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 4)
+        assert sp.puzzle == [1, 2, 5, 3, 0, 4, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 0, 5, 3, 2, 4, 6, 7, 8],
+                [1, 2, 5, 3, 7, 4, 6, 0, 8],
+                [1, 2, 5, 0, 3, 4, 6, 7, 8],
+                [1, 2, 5, 3, 4, 0, 6, 7, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 3)
+        assert sp.puzzle == [1, 2, 5, 0, 3, 4, 6, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [0, 2, 5, 1, 3, 4, 6, 7, 8],
+                [1, 2, 5, 3, 0, 4, 6, 7, 8],
+                [1, 2, 5, 6, 3, 4, 0, 7, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 6)
+        assert sp.puzzle == [1, 2, 5, 6, 3, 4, 0, 7, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 2, 5, 0, 3, 4, 6, 7, 8],
+                [1, 2, 5, 6, 3, 4, 7, 0, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 7)
+        assert sp.puzzle == [1, 2, 5, 6, 3, 4, 7, 0, 8]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 2, 5, 6, 0, 4, 7, 3, 8],
+                [1, 2, 5, 6, 3, 4, 0, 7, 8],
+                [1, 2, 5, 6, 3, 4, 7, 8, 0]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+        sp.puzzle = sp.swapped_blocks(0, 8)
+        assert sp.puzzle == [1, 2, 5, 6, 3, 4, 7, 8, 0]
+        ps = sp.possible_moves()
+        exp_p = [
+                [1, 2, 5, 6, 3, 0, 7, 8, 4],
+                [1, 2, 5, 6, 3, 4, 7, 0, 8]
+                ]
+        assert len(ps) == len(exp_p)
+        for state in exp_p:
+            assert state in ps
+
+
 class TestSliderSearch:
 
     def test_constructor(self):

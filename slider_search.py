@@ -15,6 +15,7 @@ class SliderSearch(object):
         self.square_size = square_size
         self.goal_block_location = self.in_order_goal_block_location
         self.goal_state = self.in_order_goal_state
+        #self.heuristic = self.heuristic_misplaced  
         self.heuristic = self.heuristic_manhatten_distance
 
         self.puzzle = SliderPuzzle(self.square_size, puzzle)
@@ -66,16 +67,15 @@ class SliderSearch(object):
         """
         frontier = []
         explored = set()
-        frontier_seen = set()
+        frontier_seen = {}
         goal = self.goal_state()
 
         initial = (self.heuristic(self.puzzle.puzzle),
                     0,
                     Node(self.puzzle.puzzle, None, 0))
 
-        frontier_seen.add(initial)
+        frontier_seen[str(initial[2].state)] = 0
         heapq.heappush(frontier, initial)
-        
 
         while 1:
             if not frontier:
@@ -83,31 +83,36 @@ class SliderSearch(object):
             else:
                 # choose node
                 sel_node = heapq.heappop(frontier)
-                selected = sel_node[2] 
-                if (selected.state == goal):
-                    path = []
-                    while selected.parent is not None:
+                selected = sel_node[2]
+                stsel = str(selected)
+                if frontier_seen[stsel] <= sel_node[1]:
+                    if (selected.state == goal):
+                        path = []
+                        while selected.parent is not None:
+                            path.append(selected.state)
+                            selected = selected.parent
                         path.append(selected.state)
-                        selected = selected.parent
-                    path.append(selected.state)
-                    path = path[::-1]
-                    return path
-                else:
-                    # Expand the node
-                    self.puzzle.puzzle = selected.state
-                    ps = self.puzzle.possible_moves()
-                    for x in ps:
-                        vx = (self.heuristic(x) + selected.path_cost+1,
-                                    selected.path_cost+1,
-                                    Node(x, selected, selected.path_cost+1))
-                        if vx not in explored and vx not in frontier_seen:
-                            heapq.heappush(frontier, vx)
-                            frontier_seen.add(vx)
-                    # Move checked into explored
-                    explored.add(sel_node)
-                    frontier_seen.remove(sel_node)
-                    if len(frontier) < 5:
-                        print frontier
+                        path = path[::-1]
+                        return path
+                    else:
+                        # Expand the node
+                        self.puzzle.puzzle = selected.state
+                        ps = self.puzzle.possible_moves()
+
+                        for x in ps:
+                            strx = str(x)
+                            vx = (self.heuristic(x) + selected.path_cost+1,
+                                        selected.path_cost+1,
+                                        Node(x, selected, selected.path_cost+1))
+                            if strx in frontier_seen:
+                                if frontier_seen[strx] > vx[1]:
+                                    heapq.heappush(frontier, vx)
+                                    frontier_seen[strx] = vx[1]
+                            elif vx not in explored:
+                                heapq.heappush(frontier, vx)
+                                frontier_seen[strx] = vx[1]
+                        # Move checked into explored
+                        explored.add(sel_node)
 
 
 class Node(object):

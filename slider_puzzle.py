@@ -40,11 +40,22 @@ class SliderPuzzle(object):
     def swapped_state(self, index_a, index_b):
         """
         Generates a copy of the puzzle with two blocks swapped
+        by index.
         Note that this does NOT check for or guarantee validity
         """
         swapped = [x for x in self.puzzle]
         swapped[index_a], swapped[index_b] = swapped[index_b], swapped[index_a]
         return swapped
+
+    def swapped_blocks(self, block_a, block_b):
+        """
+        Generates a copy of the puzzle with two blocks swapped
+        by number.
+        Note that this does NOT check for or guarantee validity
+        """
+        index_a = self.puzzle.index(block_a)
+        index_b = self.puzzle.index(block_b)
+        return self.swapped_state(index_a, index_b)
 
     def possible_moves(self):
         """
